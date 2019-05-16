@@ -32,7 +32,7 @@ namespace WebGLSupport
         int caretPosition { get; }
         bool isFocused { get; }
         int selectionFocusPosition { set; }
-        int selectionAnchorPosition { set; }
+        int selectionAnchorPosition { get; set; }
 
         RectTransform TextComponentRectTransform();
         void DeactivateInputField();

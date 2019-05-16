@@ -53,6 +53,7 @@ namespace WebGLSupport
 
         public int selectionAnchorPosition
         {
+            get { return input.selectionAnchorPosition; }
             set { input.selectionAnchorPosition = value; }
         }
 

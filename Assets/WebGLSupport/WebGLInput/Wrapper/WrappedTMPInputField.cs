@@ -1,6 +1,6 @@
-﻿#if UNITY_2018_2_OR_NEWER
+﻿//#if UNITY_2018_2_OR_NEWER
 #define TMP_WEBGL_SUPPORT
-#endif
+//#endif
 
 #if TMP_WEBGL_SUPPORT
 using UnityEngine;
@@ -59,6 +59,7 @@ namespace WebGLSupport
 
         public int selectionAnchorPosition
         {
+            get { return input.selectionAnchorPosition; }
             set { input.selectionAnchorPosition = value; }
         }
 

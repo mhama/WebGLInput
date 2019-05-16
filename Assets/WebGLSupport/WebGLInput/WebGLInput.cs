@@ -1,6 +1,6 @@
-﻿#if UNITY_2018_2_OR_NEWER
+﻿//#if UNITY_2018_2_OR_NEWER
 #define TMP_WEBGL_SUPPORT
-#endif
+//#endif
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using System;
 using AOT;
 using System.Runtime.InteropServices; // for DllImport
+using System.Collections;
 
 namespace WebGLSupport
 {
@@ -101,8 +102,9 @@ namespace WebGLSupport
         /// 対象が選択されたとき
         /// </summary>
         /// <param name="eventData"></param>
-        public void OnSelect(/*BaseEventData eventData*/)
+        public IEnumerator OnSelect(/*BaseEventData eventData*/)
         {
+            yield return new WaitForEndOfFrame();
             var rect = GetScreenCoordinates(input.TextComponentRectTransform());
             bool isPassword = input.contentType == ContentType.Password;
 
@@ -110,9 +112,20 @@ namespace WebGLSupport
             //var y = (int)(Screen.height - (rect.y + rect.height));
             //id = WebGLInputPlugin.WebGLInputCreate(x, y, (int)rect.width, (int)rect.height, input.textComponent.fontSize, input.text);
             var y = (int)(Screen.height - (rect.y));
+            var index = input.caretPosition;
+            var selIndex = input.selectionAnchorPosition;
+            Debug.Log("index:"+index+" selIndex:"+selIndex);
             id = WebGLInputPlugin.WebGLInputCreate(x, y, (int)rect.width, (int)1, input.fontSize, input.text, input.lineType != LineType.SingleLine, isPassword);
 
             instances[id] = input;
+            if (index > selIndex)
+            {
+                WebGLInputPlugin.WebGLInputSetSelectionRange(id, selIndex, index);
+            } else
+            {
+                WebGLInputPlugin.WebGLInputSetSelectionRange(id, index, selIndex);
+            }
+
             WebGLInputPlugin.WebGLInputEnterSubmit(id, input.lineType != LineType.MultiLineNewline);
             WebGLInputPlugin.WebGLInputOnFocus(id, OnFocus);
             WebGLInputPlugin.WebGLInputOnBlur(id, OnBlur);
@@ -212,7 +225,8 @@ namespace WebGLSupport
             // 未登録の場合、選択する
             if (!instances.ContainsKey(id))
             {
-                OnSelect();
+                StartCoroutine(OnSelect());
+                return;
             }
 
             var start = WebGLInputPlugin.WebGLInputSelectionStart(id);
